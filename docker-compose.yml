@@ -1,0 +1,23 @@
+version: '3'
+services:
+  server:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://how_to_database_user@postgres/how_to_database
+      - NODE_ENV=development
+      - PORT=3001
+    expose:
+      - 3001
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/usr/server
+      # Don't sync node_modules from host
+      - /usr/server/node_modules
+  postgres:
+    image: postgres:11.4
+    environment:
+      POSTGRES_DB: how_to_database
+      POSTGRES_USER: how_to_database_user
