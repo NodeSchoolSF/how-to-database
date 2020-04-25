@@ -4,7 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "PORT=3001 nodemon app.js"
+    "build": "docker-compose build",
+    "db:migrate:make": "knex --knexfile db/knexfile.js migrate:make",
+    "db:migrate": "docker exec -it how-to-database_server_1 yarn run db:migrate:docker",
+    "db:migrate:docker": "knex --knexfile db/knexfile.js migrate:latest",
+    "db:shell": "docker exec -it how-to-database_postgres_1 psql postgres://how_to_database_user@postgres/how_to_database",
+    "dev": "PORT=3001 nodemon app.js",
+    "start": "docker-compose up"
   },
   "author": "Kevin Qi",
   "license": "MIT",
