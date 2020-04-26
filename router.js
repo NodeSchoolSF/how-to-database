@@ -4,9 +4,27 @@ const knex = require("./db/knex");
 
 const router = express.Router();
 
+router.get("/users", async (req, res) => {
+  try {
+    const results = await knex("users").select("*");
+    res.status(200).json({ data: results });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "failed to retrieve users" });
+  }
+});
+
 router.get("/wishlists", async (req, res) => {
   try {
-    const wishlists = await knex("wishlists").select("*");
+    const userId = req.query.user_id;
+    if (!userId) {
+      return res.status(400).json({ error: "user_id required" });
+    }
+
+    const wishlists = await knex("wishlists")
+      .select("*")
+      .where("user_id", userId);
+
     const wishlistProducts = await knex("wishlist_products")
       .join("products", "products.id", "wishlist_products.product_id")
       .select("*")
