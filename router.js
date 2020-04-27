@@ -8,14 +8,14 @@ const router = express.Router();
 router.get("/users", async (req, res) => {
   try {
     const results = await knex("users").select("*");
-    res.status(200).json({ data: results });
+    return res.status(200).json({ data: results });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "failed to retrieve users" });
   }
 });
 
-// List all wishlists for a user_id, and include nested products.
+// List all wishlists for a user_id
 router.get("/wishlists", async (req, res) => {
   try {
     const userId = req.query.user_id;
@@ -23,36 +23,34 @@ router.get("/wishlists", async (req, res) => {
       return res.status(400).json({ error: "user_id required" });
     }
 
-    const wishlists = await knex("wishlists")
+    const results = await knex("wishlists")
       .select("*")
       .where("user_id", userId);
-
-    const wishlistProducts = await knex("wishlist_products")
-      .join("products", "products.id", "wishlist_products.product_id")
-      .select("*")
-      .whereIn(
-        "wishlist_products.wishlist_id",
-        wishlists.map((item) => item.id)
-      )
-      .orderBy("products.id");
-
-    const productMap = wishlistProducts.reduce((map, item) => {
-      map[item.wishlist_id] = map[item.wishlist_id] || [];
-      map[item.wishlist_id].push(item);
-      return map;
-    }, {});
-
-    const results = wishlists.map((wishlist) => {
-      return {
-        ...wishlist,
-        products: productMap[wishlist.id],
-      };
-    });
 
     return res.status(200).json({ data: results });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "failed to retrieve wishlists" });
+  }
+});
+
+// List products in a wishlist
+router.get("/wishlists/:id/products", async (req, res) => {
+  try {
+    const wishlistId = req.params.id;
+
+    const results = await knex("wishlist_products")
+      .join("products", "products.id", "wishlist_products.product_id")
+      .select("products.*")
+      .where("wishlist_products.wishlist_id", wishlistId)
+      .orderBy("products.id");
+
+    return res.status(200).json({ data: results });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ error: "failed to retrieve wishlist products" });
   }
 });
 
