@@ -4,6 +4,7 @@ const knex = require("./db/knex");
 
 const router = express.Router();
 
+// List all users
 router.get("/users", async (req, res) => {
   try {
     const results = await knex("users").select("*");
@@ -14,6 +15,7 @@ router.get("/users", async (req, res) => {
   }
 });
 
+// List all wishlists for a user_id, and include nested products.
 router.get("/wishlists", async (req, res) => {
   try {
     const userId = req.query.user_id;
@@ -51,6 +53,26 @@ router.get("/wishlists", async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "failed to retrieve wishlists" });
+  }
+});
+
+// Add a product to a wishlist
+router.post("/wishlist_products", async (req, res) => {
+  try {
+    const { wishlist_id, product_id } = req.body;
+    console.log("fffff", wishlist_id, product_id);
+
+    const result = await knex("wishlist_products")
+      .insert({
+        wishlist_id: wishlist_id,
+        product_id: product_id,
+      })
+      .returning("*");
+
+    return res.status(201).json({ data: result });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "failed to add wishlist product" });
   }
 });
 
