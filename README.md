@@ -27,10 +27,22 @@ yarn run db:setup
 
 ## Database
 
-To get a psql shell while `yarn run start` is running:
+To get a psql shell, first make sure `yarn start` is running in a separate terminal. Then:
 
 ```
 yarn run db:shell
+```
+
+To generate a new migration with Knex, run:
+
+```
+yarn run db:migrate:make YOUR_MIGRATION_NAME
+```
+
+To execute your migrations, first make sure `yarn start` is running in a separate terminal. Then:
+
+```
+yarn run db:migrate
 ```
 
 ## The code
