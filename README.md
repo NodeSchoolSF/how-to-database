@@ -6,14 +6,20 @@ An intro to SQL databases for building web apps.
 
 ## Setup
 
-Install docker.
+Install docker: https://www.docker.com/products/docker-desktop
 
 ```
+yarn install
 yarn run build
-yarn run start
 ```
 
-In a separate terminal window:
+Start the docker app in a terminal window. This will run the Postgres database and the Node app at localhost:3001.
+
+```
+yarn start
+```
+
+In a separate terminal window, set up the database:
 
 ```
 yarn run db:setup
