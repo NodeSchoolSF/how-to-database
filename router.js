@@ -37,14 +37,15 @@ router.post("/users", async (req, res) => {
 // Wishlists - list all, filtered by a user_id
 router.get("/wishlists", async (req, res) => {
   try {
-    const userId = req.query.user_id;
-    if (!userId) {
+    if (!req.query.user_id) {
       return res.status(400).json({ error: "missing parameter" });
     }
+    const userId = parseInt(req.query.user_id, 10);
 
     const results = await knex("wishlists")
       .select("*")
-      .where("user_id", userId);
+      .where("user_id", userId)
+      .orderBy("id");
 
     return res.status(200).json({ data: results });
   } catch (err) {
@@ -56,10 +57,11 @@ router.get("/wishlists", async (req, res) => {
 // Wishlists - create new wishlist
 router.post("/wishlists", async (req, res) => {
   try {
-    const { name, user_id } = req.body;
-    if (!name || !user_id) {
+    if (!req.body.name || !req.body.user_id) {
       return res.status(400).json({ error: "missing parameter" });
     }
+    const name = req.body.name;
+    const user_id = parseInt(req.body.user_id, 10);
 
     const results = await knex("wishlists")
       .insert({ name, user_id })
@@ -75,7 +77,7 @@ router.post("/wishlists", async (req, res) => {
 // Wishlists - list all products for a wishlist
 router.get("/wishlists/:id/products", async (req, res) => {
   try {
-    const wishlistId = req.params.id;
+    const wishlistId = parseInt(req.params.id, 10);
 
     const results = await knex("wishlist_products")
       .join("products", "products.id", "wishlist_products.product_id")
@@ -95,12 +97,11 @@ router.get("/wishlists/:id/products", async (req, res) => {
 // Wishlists - add a product to a wishlist
 router.post("/wishlists/:id/products", async (req, res) => {
   try {
-    const { id } = req.params;
-    const { product_id } = req.body;
-
-    if (!product_id) {
+    if (!req.body.product_id) {
       return res.status(400).json({ error: "missing parameter" });
     }
+    const wishlist_id = parseInt(req.params.id, 10);
+    const product_id = parseInt(req.params.product_id, 10);
 
     const result = await knex("wishlist_products")
       .insert({
