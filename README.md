@@ -2,6 +2,7 @@
 
 An intro to SQL databases for building web apps.
 
+**The workshop notes are in [workshop/README.md](./workshop/README.md).**
 
 
 ## Setup
