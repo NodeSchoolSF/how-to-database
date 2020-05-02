@@ -4,7 +4,7 @@ const knex = require("./db/knex");
 
 const router = express.Router();
 
-// List all users
+// Users - list all
 router.get("/users", async (req, res) => {
   try {
     const results = await knex("users").select("*");
@@ -15,12 +15,31 @@ router.get("/users", async (req, res) => {
   }
 });
 
-// List all wishlists for a user_id
+// Users - create new
+// NOTE: this is very simplified - normally to create users you'd have a user
+// registration endpoint that salts/hashes password and generates a session.
+router.post("/users", async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: "email required" });
+    }
+
+    const results = await knex("users").insert({ email: email }).returning("*");
+
+    return res.status(201).json({ data: results });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "failed to create user" });
+  }
+});
+
+// Wishlists - list all, filtered by a user_id
 router.get("/wishlists", async (req, res) => {
   try {
     const userId = req.query.user_id;
     if (!userId) {
-      return res.status(400).json({ error: "user_id required" });
+      return res.status(400).json({ error: "missing parameter" });
     }
 
     const results = await knex("wishlists")
@@ -34,7 +53,26 @@ router.get("/wishlists", async (req, res) => {
   }
 });
 
-// List products in a wishlist
+// Wishlists - create new wishlist
+router.post("/wishlists", async (req, res) => {
+  try {
+    const { name, user_id } = req.body;
+    if (!name || !user_id) {
+      return res.status(400).json({ error: "missing parameter" });
+    }
+
+    const results = await knex("wishlists")
+      .insert({ name, user_id })
+      .returning("*");
+
+    return res.status(201).json({ data: results });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "failed to create user" });
+  }
+});
+
+// Wishlists - list all products for a wishlist
 router.get("/wishlists/:id/products", async (req, res) => {
   try {
     const wishlistId = req.params.id;
@@ -54,15 +92,19 @@ router.get("/wishlists/:id/products", async (req, res) => {
   }
 });
 
-// Add a product to a wishlist
-router.post("/wishlist_products", async (req, res) => {
+// Wishlists - add a product to a wishlist
+router.post("/wishlists/:id/products", async (req, res) => {
   try {
-    const { wishlist_id, product_id } = req.body;
-    console.log("fffff", wishlist_id, product_id);
+    const { id } = req.params;
+    const { product_id } = req.body;
+
+    if (!product_id) {
+      return res.status(400).json({ error: "missing parameter" });
+    }
 
     const result = await knex("wishlist_products")
       .insert({
-        wishlist_id: wishlist_id,
+        wishlist_id: id,
         product_id: product_id,
       })
       .returning("*");
