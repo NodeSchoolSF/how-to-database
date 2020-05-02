@@ -32,3 +32,13 @@ To get a psql shell while `yarn run start` is running:
 ```
 yarn run db:shell
 ```
+
+## The code
+
+```
+router.js         - Where API endpoints are defined. Most of the interesting logic is here.
+app.js            - Standard Express app setup
+db/knexfile.js    - Knex database configuration
+db/migrations/    - Folder containing database migrations (e.g. CREATE TABLE statements)
+db/seeds/         - Folder containing seed data
+```
