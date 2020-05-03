@@ -2,8 +2,20 @@
 
 An intro to SQL databases for building web apps.
 
-**The workshop notes are in [workshop/README.md](./workshop/README.md).**
+**Start by following the workshop notes in [workshop/README.md](./workshop/README.md).** It'll guide you through relational database concepts (creating tables, inserting data, querying, one-to-many and many-to-many relationships, JOINs) and then explain how to integrate a SQL database into your Node app (migrations, query builders, and API routes).
 
+## The Node app
+
+This repo also contains a Node/Express app with PostgreSQL set up. Here's what the files do:
+
+```
+router.js         - Where API endpoints are defined. Most of the interesting logic is here.
+app.js            - Standard Express app setup
+package.json      - Contains scripts to build/run app and manage DB migrations
+db/knexfile.js    - Knex database configuration
+db/migrations/    - Folder containing database migrations (e.g. CREATE TABLE statements)
+db/seeds/         - Folder containing seed data
+```
 
 ## Setup
 
@@ -44,14 +56,4 @@ To execute your migrations, first make sure `yarn start` is running in a separat
 
 ```
 yarn run db:migrate
-```
-
-## The code
-
-```
-router.js         - Where API endpoints are defined. Most of the interesting logic is here.
-app.js            - Standard Express app setup
-db/knexfile.js    - Knex database configuration
-db/migrations/    - Folder containing database migrations (e.g. CREATE TABLE statements)
-db/seeds/         - Folder containing seed data
 ```
