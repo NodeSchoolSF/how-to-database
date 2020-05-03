@@ -84,7 +84,7 @@ INSERT INTO users (email) VALUES
   ('dwight@example.com');
 ```
 
-We don't have to insert `id` because of the auto-incrementing `SERIAL` property. "Nintendo Switch" will have id 1, "PS4" will have id 2, and so on.
+We don't have to insert `id` because of the auto-incrementing `SERIAL` property.
 
 Now let's query the data using the SELECT statement:
 
@@ -97,11 +97,20 @@ SELECT * FROM users;
 
 Here are the results:
 
-[products](https://www.notion.so/67087f66d0de467a972ca15fad426ba6)
+```
+id |      name       | price
+---+-----------------+-------
+ 1 | Nintendo Switch |  1000
+ 2 | PS4             |   400
+ 3 | Xbox            |   500
+ 4 | Flour           |     5
 
----
-
-[users](https://www.notion.so/c03a6059a80141f7abd75afe50cb0554)
+id |       email
+---+--------------------
+ 1 | bob@example.com
+ 2 | karen@example.com
+ 3 | dwight@example.com
+```
 
 Note that the ids are indeed automatically generated, starting from 1.
 
@@ -164,7 +173,7 @@ For example, say we want to create a report which shows every wishlist, along wi
 
 ```sql
 SELECT * FROM wishlists
-**JOIN users ON users.id = wishlists.user_id;**
+JOIN users ON users.id = wishlists.user_id;
 ```
 
 Here's a diagram that shows what this JOIN looks like:
@@ -216,7 +225,7 @@ To do this, we'll need to write a SELECT statement that JOINs the wishlists tabl
 SELECT 
   wishlists.name, 
   products.name,
-	products.price
+  products.price
 FROM wishlists
 JOIN wishlist_products ON wishlist_products.wishlist_id = wishlists.id
 JOIN products ON products.id = wishlist_products.product_id;
@@ -239,19 +248,10 @@ I've built a Node app to demonstrate the concepts, which you can check out at [h
 The app we'll build is a REST API built on NodeJS and Express. Here are some of the routes:
 
 ```
-# Create wishlist
-POST /wishlists
-{ name: "Stuff to buy in 2020", user_id: 2 }
-
-# Add product to a wishlist
-POST /wishlists/:id/products
-{ product_id: 4 }
-
-# List all wishlists for a user id
-GET /wishlists?user_id=2
-
-# List all products for a wishlist
-GET /wishlists/:id/products
+POST /wishlists                # Route to create wishlist
+POST /wishlists/:id/products   # Add product to a wishlist
+GET  /wishlists?user_id=2      # List all wishlists for a user id
+GET  /wishlists/:id/products   # List all products for a wishlist
 ```
 
 Side note: you'll also want to have PUT endpoints to update records and DELETE endpoints to delete them. We won't cover those, but they'll be fairly similar to the POST endpoint.
@@ -317,7 +317,7 @@ how_to_database=# \d
  public | knex_migrations_id_seq         | sequence | how_to_database_user
  public | knex_migrations_lock           | table    | how_to_database_user
  public | knex_migrations_lock_index_seq | sequence | how_to_database_user
- **public | products                       | table    | how_to_database_user**
+ public | products                       | table    | how_to_database_user
  public | products_id_seq                | sequence | how_to_database_user
  public | users                          | table    | how_to_database_user
  public | users_id_seq                   | sequence | how_to_database_user
@@ -366,19 +366,19 @@ What does the full API endpoint look like?
 ```jsx
 router.post("/wishlists", async (req, res) => {
   try {
-		// Get parameters from JSON body
+    // Get parameters from JSON body
     const { name, user_id } = req.body;
 
-		// Validate parameters
+    // Validate parameters
     if (!name || !user_id) {
       return res.status(400).json({ error: "missing parameter" });
     }
 
-    **const results = await knex("wishlists")
+    const results = await knex("wishlists")
       .insert({ name, user_id })
-      .returning("*");**
+      .returning("*");
 
-		// Return success status and data
+    // Return success status and data
     return res.status(201).json({ data: results });
   } catch (err) {
     console.error(err);
@@ -427,11 +427,11 @@ router.get("/wishlists/:id/products", async (req, res) => {
   try {
     const wishlistId = req.params.id;
 
-    **const results = await knex("wishlist_products")
+    const results = await knex("wishlist_products")
       .join("products", "products.id", "wishlist_products.product_id")
       .select("products.*")
       .where("wishlist_products.wishlist_id", wishlistId)
-      .orderBy("products.id");**
+      .orderBy("products.id");
 
     return res.status(200).json({ data: results });
   } catch (err) {
@@ -457,10 +457,10 @@ Here's the result of querying the endpoint in a REST client:
 
 Hopefully this helps you understand relational databases and how to use them. Your PM will be happy (although they'll still want a frontend for this API).
 
-To go back to the question of "a why relational DB?", we can now answer the question a little better. Relational databases better support expressing certain relationships across your data, such as many-to-many relationships (e.g. with products and wishlists), and allow you to query across tables using JOINs. In contrast, document databases like MongoDB don't support JOINs and many-to-many relationships, and may be a worse fit for the typical web app.
+To go back to the question of "a why relational DB?", we can now answer the question a little better. Relational databases better support expressing certain relationships across your data, such as many-to-many relationships (e.g. with products and wishlists), and allow you to query across tables using JOINs. In contrast, document databases like MongoDB don't support JOINs and many-to-many relationships.
 
 Understanding relational databases has been super useful throughout my career. Being able to write queries helps you look at data, find issues, build reports, and more. Being able to design tables and relationships allows you to build complex apps. It's well worth the time to understand it.
 
-All of the content I covered, and the code for the Node app, can be found here:
+The code for the Node app we talked through can be found here:
 
 [https://github.com/NodeSchoolSF/how-to-database](https://github.com/NodeSchoolSF/how-to-database)
