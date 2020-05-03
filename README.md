@@ -9,12 +9,13 @@ An intro to SQL databases for building web apps.
 This repo also contains a Node/Express app with PostgreSQL set up. Here's what the files do:
 
 ```
-router.js         - Where API endpoints are defined. Most of the interesting logic is here.
-app.js            - Standard Express app setup
-package.json      - Contains scripts to build/run app and manage DB migrations
-db/knexfile.js    - Knex database configuration
-db/migrations/    - Folder containing database migrations (e.g. CREATE TABLE statements)
-db/seeds/         - Folder containing seed data
+router.js          - Where API endpoints are defined. Most of the interesting logic is here.
+app.js             - Standard Express app setup
+docker-compose.yml - Docker file which specifies how to run Node and Postgres
+package.json       - Contains scripts to build/run app and manage DB migrations
+db/knexfile.js     - Knex database configuration
+db/migrations/     - Folder containing database migrations (e.g. CREATE TABLE statements)
+db/seeds/          - Folder containing seed data
 ```
 
 ## Setup
