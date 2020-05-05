@@ -101,11 +101,11 @@ router.post("/wishlists/:id/products", async (req, res) => {
       return res.status(400).json({ error: "missing parameter" });
     }
     const wishlist_id = parseInt(req.params.id, 10);
-    const product_id = parseInt(req.params.product_id, 10);
+    const product_id = parseInt(req.body.product_id, 10);
 
     const result = await knex("wishlist_products")
       .insert({
-        wishlist_id: id,
+        wishlist_id: wishlist_id,
         product_id: product_id,
       })
       .returning("*");
